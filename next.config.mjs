@@ -1,0 +1,1 @@
+/** @type {import('next').NextStyle} */ const nextConfig = {}; export default nextConfig;
