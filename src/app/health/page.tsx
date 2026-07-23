@@ -1,17 +1,19 @@
-export const revalidate = 0;
-
-export default async function HealthPage() {
-  const timestamp = new Date().toISOString();
-
+export default function HealthPage() {
   return (
-    <main className="min-h-screen bg-slate-900 text-white p-8 flex flex-col items-center justify-center font-sans">
-      <div className="max-w-md w-full p-6 bg-slate-800 rounded-lg border border-slate-700 shadow-xl">
-        <h1 className="text-2xl font-bold text-emerald-400 mb-4">System Health Status</h1>
-        <div className="space-y-3 font-mono text-sm">
-          <p><span className="text-slate-400">Status:</span> <span className="text-emerald-400 font-semibold">200 OK</span></p>
-          <p><span className="text-slate-400">Environment:</span> Production</p>
-          <p><span className="text-slate-400">Server Time:</span> {timestamp}</p>
+    <main className="max-w-2xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-bold mb-4 text-white">System Status</h1>
+      
+      <div className="p-6 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-slate-400">Application State</p>
+          <p className="text-xl font-semibold text-emerald-400 flex items-center gap-2 mt-1">
+            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            Operational
+          </p>
         </div>
+        <span className="px-3 py-1 text-xs rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+          HTTP 200 OK
+        </span>
       </div>
     </main>
   );
