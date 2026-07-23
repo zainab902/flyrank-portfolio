@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import './globals.css'; // remove this line if you don't have globals.css
 
 export const metadata: Metadata = {
   title: 'Zainab Sultan | Portfolio',
