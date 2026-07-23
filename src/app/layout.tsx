@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-// @ts-ignore
-import './globals.css';
+
 export const metadata: Metadata = {
   title: 'Zainab Sultan | Portfolio',
   description: 'Software Engineer & Web Developer',
@@ -13,7 +12,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body className="bg-slate-950 text-slate-100 antialiased min-h-screen">
+        {children}
+      </body>
     </html>
   );
 }
