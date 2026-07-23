@@ -1,0 +1,1 @@
+{"name": "flyrank-portfolio", "version": "0.1.0", "private": true, "dependencies": {"next": "latest", "react": "latest", "react-dom": "latest"}, "devDependencies": {"typescript": "latest", "@types/node": "latest", "@types/react": "latest"}}
