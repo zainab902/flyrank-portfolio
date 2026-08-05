@@ -6,10 +6,8 @@ import { useChat } from '@ai-sdk/react';
 import { ToolPartRenderer } from '../components/ToolPartRenderer';
 
 export default function Home() {
-  // Local state to ensure input typing ALWAYS works smoothly
   const [textInput, setTextInput] = useState('');
 
-  // Cast hook options as any to allow standard 'api' endpoint without TypeScript complaints
   const chat = (useChat as any)({
     api: '/api/chat',
     onError: (err: any) => {
@@ -17,7 +15,6 @@ export default function Home() {
     },
   });
 
-  // Extract properties safely
   const messages: any[] = chat.messages || [];
   const append = chat.append;
   const error = chat.error;
@@ -26,18 +23,21 @@ export default function Home() {
 
   const isLoading = status === 'streaming' || status === 'submitted' || Boolean(chat.isLoading);
 
-  // Manual submit handler to completely bypass hook event locks
-  const handleFormSubmit = (e: React.FormEvent) => {
+  // Trigger submission using append with standard Message format
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!textInput.trim() || isLoading) return;
+    const messageText = textInput.trim();
+    if (!messageText || isLoading) return;
+
+    // Clear input state immediately so UI feels responsive
+    setTextInput('');
 
     if (append) {
-      append({ role: 'user', content: textInput.trim() });
-    } else if (chat.handleSubmit) {
-      chat.handleSubmit(e);
+      await append({
+        role: 'user',
+        content: messageText,
+      });
     }
-
-    setTextInput('');
   };
 
   return (
@@ -209,7 +209,7 @@ export default function Home() {
             )}
           </div>
 
-          {/* Input Form with direct React state */}
+          {/* Form setup: ensure button click and enter key both fire handleFormSubmit */}
           <form onSubmit={handleFormSubmit} className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2">
             <input
               type="text"
