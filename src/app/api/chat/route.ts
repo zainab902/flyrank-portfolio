@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       messages,
     });
 
-    return result.toTextStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error: any) {
     console.error('API Route Error:', error);
     return new Response(

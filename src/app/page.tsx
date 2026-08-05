@@ -3,34 +3,55 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { ToolPartRenderer } from '../components/ToolPartRenderer';
 
 export default function Home() {
   const [promptText, setPromptText] = useState('');
 
-  const chat = (useChat as any)({
-    api: '/api/chat',
-    onError: (err: any) => {
+  const { messages, sendMessage, error, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+    onError: (err) => {
       console.error('Chat stream error:', err);
     },
   });
 
-  const messages: any[] = chat.messages || [];
-  const append = chat.append;
-  const error = chat.error;
-  const reload = chat.reload;
-  const status = chat.status;
+  const isLoading = status === 'streaming' || status === 'submitted';
 
-  const isLoading = status === 'streaming' || status === 'submitted' || Boolean(chat.isLoading);
+  const handleSendMessage = async (text: string) => {
+    const cleanText = text.trim();
+    if (!cleanText || isLoading) return;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!promptText.trim() || isLoading) return;
-
-    if (append) {
-      append({ role: 'user', content: promptText.trim() });
-    }
     setPromptText('');
+
+    try {
+      await sendMessage({
+        text: cleanText,
+      });
+    } catch (e) {
+      console.error('Failed to send message via SDK:', e);
+    }
+  };
+
+  const retryLastMessage = async () => {
+    const lastUserMessage = [...messages]
+      .reverse()
+      .find((m) => m.role === 'user');
+
+    if (!lastUserMessage) return;
+
+    // Extract text from message parts in the new UI message structure
+    const extractedText =
+      lastUserMessage.parts
+        ?.filter((p: any) => p.type === 'text')
+        .map((p: any) => p.text)
+        .join('') || '';
+
+    if (extractedText) {
+      await handleSendMessage(extractedText);
+    }
   };
 
   return (
@@ -100,11 +121,12 @@ export default function Home() {
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               <h3 className="text-sm font-semibold text-slate-200">Portfolio Assistant AI</h3>
             </div>
-            <span className="text-xs font-mono text-slate-500">Claude 3.5 Sonnet + Tools</span>
+            <span className="text-xs font-mono text-slate-500">Gemini 1.5 Pro + Tools</span>
           </div>
 
           {/* Messages Window */}
           <div className="flex-1 p-5 overflow-y-auto space-y-4 max-h-[400px]">
+            {/* Empty State */}
             {messages.length === 0 && (
               <div className="py-8 flex flex-col items-center justify-center text-center">
                 <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mb-3">
@@ -119,14 +141,14 @@ export default function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
                   <button
                     type="button"
-                    onClick={() => append && append({ role: 'user', content: 'Score my Next.js chat project' })}
+                    onClick={() => handleSendMessage('Score my Next.js chat project')}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚡</span> Score my Next.js chat project
                   </button>
                   <button
                     type="button"
-                    onClick={() => append && append({ role: 'user', content: 'What stack and tools does Zainab use?' })}
+                    onClick={() => handleSendMessage('What stack and tools does Zainab use?')}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚙️</span> What stack & tools are used here?
@@ -148,19 +170,30 @@ export default function Home() {
                       : 'bg-slate-950 border border-slate-800 text-slate-200 rounded-tl-none'
                   }`}
                 >
-                  {m.content}
-
-                  {m.toolInvocations?.map((toolInvocation: any) => (
-                    <ToolPartRenderer 
-                      key={toolInvocation.toolCallId || Math.random()} 
-                      toolInvocation={toolInvocation} 
-                    />
-                  ))}
+                  {/* Render parts for AI SDK 5+ */}
+                  {m.parts ? (
+                    m.parts.map((part: any, index: number) => {
+                      if (part.type === 'text') {
+                        return <span key={index}>{part.text}</span>;
+                      }
+                      if (part.type === 'tool-invocation') {
+                        return (
+                          <ToolPartRenderer
+                            key={part.toolCallId || index}
+                            toolInvocation={part.toolInvocation}
+                          />
+                        );
+                      }
+                      return null;
+                    })
+                  ) : (
+                    <span>{m.content}</span>
+                  )}
                 </div>
               </div>
             ))}
 
-            {/* Skeleton Loading State */}
+            {/* Loading Skeleton */}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-2xl rounded-tl-none text-xs text-slate-400 animate-pulse flex items-center gap-2">
@@ -170,7 +203,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* Error State */}
+            {/* Error Banner with Retry */}
             {error && (
               <div className="p-4 bg-red-950/30 border border-red-500/40 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-red-200">
                 <div>
@@ -183,8 +216,8 @@ export default function Home() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => reload && reload()}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                  onClick={retryLastMessage}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   🔄 Retry Message
                 </button>
@@ -192,8 +225,14 @@ export default function Home() {
             )}
           </div>
 
-          {/* Form with decoupled state */}
-          <form onSubmit={handleSubmit} className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2">
+          {/* Form Input */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage(promptText);
+            }}
+            className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2"
+          >
             <input
               type="text"
               value={promptText}
