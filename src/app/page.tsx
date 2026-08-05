@@ -1,27 +1,37 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useChat } from '@ai-sdk/react';
 import { ToolPartRenderer } from '../components/ToolPartRenderer';
 
 export default function Home() {
-  const {
-    messages = [],
-    input = '',
-    handleInputChange,
-    handleSubmit,
-    append,
-    error,
-    reload,
-    status,
-  } = (useChat as any)({
+  const [promptText, setPromptText] = useState('');
+
+  const chat = (useChat as any)({
     api: '/api/chat',
     onError: (err: any) => {
       console.error('Chat stream error:', err);
     },
   });
 
-  const isLoading = status === 'streaming' || status === 'submitted';
+  const messages: any[] = chat.messages || [];
+  const append = chat.append;
+  const error = chat.error;
+  const reload = chat.reload;
+  const status = chat.status;
+
+  const isLoading = status === 'streaming' || status === 'submitted' || Boolean(chat.isLoading);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!promptText.trim() || isLoading) return;
+
+    if (append) {
+      append({ role: 'user', content: promptText.trim() });
+    }
+    setPromptText('');
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -95,7 +105,6 @@ export default function Home() {
 
           {/* Messages Window */}
           <div className="flex-1 p-5 overflow-y-auto space-y-4 max-h-[400px]">
-            {/* FE-08: Designed Empty State */}
             {messages.length === 0 && (
               <div className="py-8 flex flex-col items-center justify-center text-center">
                 <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mb-3">
@@ -110,14 +119,14 @@ export default function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
                   <button
                     type="button"
-                    onClick={() => append({ role: 'user', content: 'Score my Next.js chat project' })}
+                    onClick={() => append && append({ role: 'user', content: 'Score my Next.js chat project' })}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚡</span> Score my Next.js chat project
                   </button>
                   <button
                     type="button"
-                    onClick={() => append({ role: 'user', content: 'What stack and tools does Zainab use?' })}
+                    onClick={() => append && append({ role: 'user', content: 'What stack and tools does Zainab use?' })}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚙️</span> What stack & tools are used here?
@@ -130,9 +139,7 @@ export default function Home() {
             {messages.map((m: any) => (
               <div
                 key={m.id || Math.random()}
-                className={`flex flex-col ${
-                  m.role === 'user' ? 'items-end' : 'items-start'
-                }`}
+                className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
                   className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
@@ -143,7 +150,6 @@ export default function Home() {
                 >
                   {m.content}
 
-                  {/* Tool Invocations */}
                   {m.toolInvocations?.map((toolInvocation: any) => (
                     <ToolPartRenderer 
                       key={toolInvocation.toolCallId || Math.random()} 
@@ -154,7 +160,7 @@ export default function Home() {
               </div>
             ))}
 
-            {/* FE-08: Skeleton Loading State */}
+            {/* Skeleton Loading State */}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-2xl rounded-tl-none text-xs text-slate-400 animate-pulse flex items-center gap-2">
@@ -164,7 +170,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* FE-08: Designed Error State with Working Retry */}
+            {/* Error State */}
             {error && (
               <div className="p-4 bg-red-950/30 border border-red-500/40 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-red-200">
                 <div>
@@ -177,7 +183,7 @@ export default function Home() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => reload()}
+                  onClick={() => reload && reload()}
                   className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0"
                 >
                   🔄 Retry Message
@@ -186,18 +192,18 @@ export default function Home() {
             )}
           </div>
 
-          {/* Input Form */}
+          {/* Form with decoupled state */}
           <form onSubmit={handleSubmit} className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2">
             <input
               type="text"
-              value={input}
-              onChange={handleInputChange}
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
               placeholder="Type your query or ask to evaluate a project..."
               className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
             />
             <button
               type="submit"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || !promptText.trim()}
               className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer"
             >
               Send
