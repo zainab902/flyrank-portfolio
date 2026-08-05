@@ -1,44 +1,27 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { useChat } from '@ai-sdk/react';
 import { ToolPartRenderer } from '../components/ToolPartRenderer';
 
 export default function Home() {
-  const [textInput, setTextInput] = useState('');
-
-  const chat = (useChat as any)({
+  const {
+    messages = [],
+    input = '',
+    handleInputChange,
+    handleSubmit,
+    append,
+    error,
+    reload,
+    status,
+  } = (useChat as any)({
     api: '/api/chat',
     onError: (err: any) => {
-      console.error('Chat interface stream error:', err);
+      console.error('Chat stream error:', err);
     },
   });
 
-  const messages: any[] = chat.messages || [];
-  const append = chat.append;
-  const error = chat.error;
-  const reload = chat.reload;
-  const status = chat.status;
-
-  const isLoading = status === 'streaming' || status === 'submitted' || Boolean(chat.isLoading);
-
-  // Trigger submission using append with standard Message format
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const messageText = textInput.trim();
-    if (!messageText || isLoading) return;
-
-    // Clear input state immediately so UI feels responsive
-    setTextInput('');
-
-    if (append) {
-      await append({
-        role: 'user',
-        content: messageText,
-      });
-    }
-  };
+  const isLoading = status === 'streaming' || status === 'submitted';
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -127,20 +110,14 @@ export default function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      append && append({ role: 'user', content: 'Score my Next.js chat project' });
-                    }}
+                    onClick={() => append({ role: 'user', content: 'Score my Next.js chat project' })}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚡</span> Score my Next.js chat project
                   </button>
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      append && append({ role: 'user', content: 'What stack and tools does Zainab use?' });
-                    }}
+                    onClick={() => append({ role: 'user', content: 'What stack and tools does Zainab use?' })}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     <span>⚙️</span> What stack & tools are used here?
@@ -200,7 +177,7 @@ export default function Home() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => reload && reload()}
+                  onClick={() => reload()}
                   className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0"
                 >
                   🔄 Retry Message
@@ -209,18 +186,18 @@ export default function Home() {
             )}
           </div>
 
-          {/* Form setup: ensure button click and enter key both fire handleFormSubmit */}
-          <form onSubmit={handleFormSubmit} className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2">
+          {/* Input Form */}
+          <form onSubmit={handleSubmit} className="p-3.5 border-t border-slate-800 bg-slate-900/90 flex gap-2">
             <input
               type="text"
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
+              value={input}
+              onChange={handleInputChange}
               placeholder="Type your query or ask to evaluate a project..."
               className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
             />
             <button
               type="submit"
-              disabled={isLoading || !textInput.trim()}
+              disabled={isLoading || !input.trim()}
               className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer"
             >
               Send

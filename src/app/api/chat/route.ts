@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { CHAT_MODEL, CHAT_SYSTEM_PROMPT } from '../../../config/ai-model';
+import { google } from '@ai-sdk/google';
 
 export const maxDuration = 30;
 
@@ -8,17 +8,15 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const result = streamText({
-      model: CHAT_MODEL,
-      system: CHAT_SYSTEM_PROMPT,
+      model: google('gemini-1.5-pro'),
       messages,
     });
 
-    // Replace toDataStreamResponse with toTextStreamResponse
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('Streaming route error:', error);
+  } catch (error: any) {
+    console.error('API Route Error:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to process chat stream' }), 
+      JSON.stringify({ error: error.message || 'Internal Server Error' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
