@@ -42,7 +42,6 @@ export default function Home() {
 
     if (!lastUserMessage) return;
 
-    // Extract text from message parts in the new UI message structure
     const extractedText =
       lastUserMessage.parts
         ?.filter((p: any) => p.type === 'text')
@@ -68,6 +67,9 @@ export default function Home() {
             </Link>
             <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
               About
+            </Link>
+            <Link href="/buttons-demo" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1">
+              <span>⚡</span> Buttons Demo
             </Link>
             <Link href="/health" className="text-slate-300 hover:text-emerald-400 transition-colors">
               Health-Check
@@ -106,10 +108,10 @@ export default function Home() {
             View Case Studies
           </Link>
           <Link
-            href="/health"
-            className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-medium px-6 py-3.5 rounded-lg transition-all text-center"
+            href="/buttons-demo"
+            className="bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-medium px-6 py-3.5 rounded-lg transition-all text-center flex items-center justify-center gap-2"
           >
-            System Status (/health)
+            <span>⚡</span> View Buttons Demo (FE-AA1)
           </Link>
         </div>
 
@@ -170,7 +172,6 @@ export default function Home() {
                       : 'bg-slate-950 border border-slate-800 text-slate-200 rounded-tl-none'
                   }`}
                 >
-                  {/* Render parts for AI SDK 5+ */}
                   {m.parts ? (
                     m.parts.map((part: any, index: number) => {
                       if (part.type === 'text') {
