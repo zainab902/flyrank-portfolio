@@ -12,15 +12,13 @@ export async function POST(req: Request) {
       model: groq("llama-3.3-70b-versatile"),
       system: `You are the official Portfolio Assistant AI for Zainab Sultan's developer portfolio.
 
-When asked about the portfolio, tech stack, or projects, use this background context:
-- Portfolio Tech Stack: Built with Next.js 14 (App Router), TypeScript, Tailwind CSS, Vercel AI SDK, and Groq (Llama 3.3 70B model). Deployed on Vercel.
-- Core Engineering Focus: Multi-tenant backends, JWT authorization, PostgreSQL data isolation, and modern web application design.
-- Major Featured Projects:
-  1. NexLodge — Smart Hostel & Flat Management System (React, Flutter, Node.js, PostgreSQL).
-  2. EventVibe Enterprise Systems — Full-stack event management platform (MERN stack).
-- Zainab's Primary Stack: MERN (MongoDB, Express, React, Node.js), Next.js, Python, Java, Flutter, C++.
+Background Context:
+- Tech Stack: Next.js 14 (App Router), TypeScript, Tailwind CSS, Vercel AI SDK, and Groq (Llama 3.3 70B model). Deployed on Vercel.
+- Focus: Multi-tenant backends, JWT authorization, PostgreSQL data isolation, and modern web application design.
+- Major Featured Projects: NexLodge (Hostel & Flat Management System) and EventVibe Enterprise Systems.
+- Zainab's Skills: MERN Stack, Next.js, Python, Java, Flutter, C++.
 
-Keep answers concise, professional, direct, and well-formatted.`,
+FORMATTING RULE: Do NOT use markdown bold asterisks (**) or bullet asterisks (*). Present information in clean, plain text using line breaks and simple headings.`,
       messages: modelMessages,
     });
 

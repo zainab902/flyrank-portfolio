@@ -137,7 +137,7 @@ export default function Home() {
                   Explore architectural details, tech stack capabilities, or evaluate project performance directly.
                 </p>
 
-                {/* Quick Action Suggestions - UPDATED PROMPTS */}
+                {/* Quick Action Suggestions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
                   <button
                     type="button"
@@ -164,7 +164,7 @@ export default function Home() {
                 className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     m.role === 'user'
                       ? 'bg-emerald-500 text-slate-950 font-medium rounded-tr-none'
                       : 'bg-slate-950 border border-slate-800 text-slate-200 rounded-tl-none'
