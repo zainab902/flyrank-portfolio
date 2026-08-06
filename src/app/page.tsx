@@ -121,7 +121,7 @@ export default function Home() {
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               <h3 className="text-sm font-semibold text-slate-200">Portfolio Assistant AI</h3>
             </div>
-            <span className="text-xs font-mono text-slate-500">Gemini 1.5 Pro + Tools</span>
+            <span className="text-xs font-mono text-slate-500">Portfolio AI + Tools</span>
           </div>
 
           {/* Messages Window */}
@@ -137,21 +137,21 @@ export default function Home() {
                   Explore architectural details, tech stack capabilities, or evaluate project performance directly.
                 </p>
 
-                {/* Quick Action Suggestions */}
+                {/* Quick Action Suggestions - UPDATED PROMPTS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
                   <button
                     type="button"
-                    onClick={() => handleSendMessage('Score my Next.js chat project')}
+                    onClick={() => handleSendMessage('Score my Next.js chat project architecture')}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
-                    <span>⚡</span> Score my Next.js chat project
+                    <span>⚡</span> Score my Next.js chat project architecture
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleSendMessage('What stack and tools does Zainab use?')}
+                    onClick={() => handleSendMessage('What stack & tools are used in this portfolio?')}
                     className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
                   >
-                    <span>⚙️</span> What stack & tools are used here?
+                    <span>⚙️</span> What stack & tools are used in this portfolio?
                   </button>
                 </div>
               </div>
