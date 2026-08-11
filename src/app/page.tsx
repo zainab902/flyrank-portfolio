@@ -9,7 +9,7 @@ import { ToolPartRenderer } from '../components/ToolPartRenderer';
 export default function Home() {
   const [promptText, setPromptText] = useState('');
 
-  const { messages, sendMessage, error, status } = useChat({
+  const { messages, sendMessage, error, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
     }),
@@ -58,31 +58,50 @@ export default function Home() {
       {/* Navigation Header */}
       <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-extrabold tracking-tight text-emerald-400 hover:opacity-90">
+          <Link
+            href="/"
+            className="text-xl font-extrabold tracking-tight text-emerald-400 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            aria-label="ZS Portfolio Home"
+          >
             ZS<span className="text-white">.</span>
           </Link>
-          <nav className="flex items-center gap-6 text-sm font-medium">
-            <Link href="/work" className="text-slate-300 hover:text-white transition-colors">
+          <nav className="flex items-center gap-6 text-sm font-medium" aria-label="Main Navigation">
+            <Link
+              href="/work"
+              className="text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            >
               Work
             </Link>
-            <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
+            <Link
+              href="/about"
+              className="text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            >
               About
             </Link>
-            <Link href="/buttons-demo" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1">
+            <Link
+              href="/buttons-demo"
+              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            >
               <span>⚡</span> Buttons Demo
             </Link>
-            <Link href="/health" className="text-slate-300 hover:text-emerald-400 transition-colors">
+            <Link
+              href="/health"
+              className="text-slate-300 hover:text-emerald-400 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            >
               Health-Check
             </Link>
             <Link
               href="/contact"
-              className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-4 py-2 rounded-lg transition-colors"
+              className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400"
             >
               Contact
             </Link>
-            <Link href="/3d-demo" className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1">
-  <span>🧊</span> 3D Experience
-</Link>
+            <Link
+              href="/3d-demo"
+              className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+            >
+              <span>🧊</span> 3D Experience
+            </Link>
           </nav>
         </div>
       </header>
@@ -91,7 +110,7 @@ export default function Home() {
       <main className="flex-1 max-w-4xl mx-auto px-6 flex flex-col justify-start items-center text-center py-12 w-full">
         {/* Hero Section */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-emerald-400 mb-6">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
           Available for SaaS & Product Engineering
         </div>
 
@@ -106,38 +125,50 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-12">
           <Link
             href="/work"
-            className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3.5 rounded-lg transition-all text-center shadow-lg shadow-emerald-500/10"
+            className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3.5 rounded-lg transition-all text-center shadow-lg shadow-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             View Case Studies
           </Link>
           <Link
             href="/buttons-demo"
-            className="bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-medium px-6 py-3.5 rounded-lg transition-all text-center flex items-center justify-center gap-2"
+            className="bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-medium px-6 py-3.5 rounded-lg transition-all text-center flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             <span>⚡</span> View Buttons Demo (FE-AA1)
           </Link>
         </div>
 
         {/* Interactive AI Chat Section */}
-        <section className="w-full max-w-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm rounded-2xl overflow-hidden text-left shadow-2xl flex flex-col min-h-[480px]">
+        <section
+          aria-label="AI Portfolio Assistant Chat"
+          className="w-full max-w-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm rounded-2xl overflow-hidden text-left shadow-2xl flex flex-col min-h-[480px]"
+        >
           {/* Chat Header */}
           <div className="px-5 py-3.5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <h3 className="text-sm font-semibold text-slate-200">Portfolio Assistant AI</h3>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" aria-hidden="true" />
+              <h2 className="text-sm font-semibold text-slate-200">Portfolio Assistant AI</h2>
             </div>
             <span className="text-xs font-mono text-slate-500">Portfolio AI + Tools</span>
           </div>
 
-          {/* Messages Window */}
-          <div className="flex-1 p-5 overflow-y-auto space-y-4 max-h-[400px]">
+          {/* Messages Window with ARIA Live Region for Screen Readers */}
+          <div
+            aria-live="polite"
+            aria-atomic="false"
+            role="log"
+            aria-label="Conversation History"
+            className="flex-1 p-5 overflow-y-auto space-y-4 max-h-[400px]"
+          >
             {/* Empty State */}
             {messages.length === 0 && (
               <div className="py-8 flex flex-col items-center justify-center text-center">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mb-3">
+                <div
+                  className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mb-3"
+                  aria-hidden="true"
+                >
                   💬
                 </div>
-                <h4 className="text-sm font-semibold text-slate-200 mb-1">Ask the AI Assistant</h4>
+                <h3 className="text-sm font-semibold text-slate-200 mb-1">Ask the AI Assistant</h3>
                 <p className="text-xs text-slate-400 max-w-md mb-6">
                   Explore architectural details, tech stack capabilities, or evaluate project performance directly.
                 </p>
@@ -147,16 +178,16 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => handleSendMessage('Score my Next.js chat project architecture')}
-                    className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
+                    className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   >
-                    <span>⚡</span> Score my Next.js chat project architecture
+                    <span aria-hidden="true">⚡</span> Score my Next.js chat project architecture
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSendMessage('What stack & tools are used in this portfolio?')}
-                    className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer"
+                    className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs text-slate-300 text-left transition-colors flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   >
-                    <span>⚙️</span> What stack & tools are used in this portfolio?
+                    <span aria-hidden="true">⚙️</span> What stack & tools are used in this portfolio?
                   </button>
                 </div>
               </div>
@@ -201,7 +232,7 @@ export default function Home() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-2xl rounded-tl-none text-xs text-slate-400 animate-pulse flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" aria-hidden="true" />
                   Generating response...
                 </div>
               </div>
@@ -221,7 +252,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={retryLastMessage}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-300"
                 >
                   🔄 Retry Message
                 </button>
@@ -242,15 +273,29 @@ export default function Home() {
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               placeholder="Type your query or ask to evaluate a project..."
-              className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+              aria-label="Ask AI Assistant a question"
+              className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             />
-            <button
-              type="submit"
-              disabled={isLoading || !promptText.trim()}
-              className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer"
-            >
-              Send
-            </button>
+
+            {isLoading ? (
+              <button
+                type="button"
+                onClick={stop}
+                aria-label="Stop generating AI response"
+                className="bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-300 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer"
+              >
+                Stop
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!promptText.trim()}
+                aria-label="Send query to AI Assistant"
+                className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              >
+                Send
+              </button>
+            )}
           </form>
         </section>
       </main>
