@@ -80,6 +80,9 @@ export default function Home() {
             >
               Contact
             </Link>
+            <Link href="/3d-demo" className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1">
+  <span>🧊</span> 3D Experience
+</Link>
           </nav>
         </div>
       </header>
