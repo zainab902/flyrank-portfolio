@@ -102,6 +102,12 @@ export default function Home() {
             >
               <span>🧊</span> 3D Experience
             </Link>
+            <Link
+  href="/shader-hero"
+  className="text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-md px-1"
+>
+  <span>✨</span> Shader Hero
+</Link>
           </nav>
         </div>
       </header>
