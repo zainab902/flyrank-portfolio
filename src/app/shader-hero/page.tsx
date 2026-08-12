@@ -29,7 +29,7 @@ export default function ShaderHeroPage() {
               ← Portfolio Home
             </Link>
             <span className="text-xs font-mono text-emerald-300 border border-emerald-500/40 bg-slate-900/60 px-2.5 py-1 rounded-full backdrop-blur-sm">
-              FE-AA3: Custom Shader Hero
+              Custom Shader Hero
             </span>
           </nav>
         </div>
