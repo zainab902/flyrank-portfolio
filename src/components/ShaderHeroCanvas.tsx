@@ -38,14 +38,15 @@ const fragmentShader = `
     // 2. Normalize mouse position coordinates
     vec2 mouse = (u_mouse * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
 
-    // 3. Compute distance vector from cursor for local flow warping
-    float mouseDist = length(st - mouse * 0.4);
+    // 3. Compute distance and localized attraction field around cursor
+    float mouseDist = length(st - mouse);
+    float mouseInfluence = smoothstep(1.0, 0.0, mouseDist);
     vec2 st0 = st;
 
-    // 4. Multi-layer domain warping (iterative sinusoidal displacement)
+    // 4. Multi-layer domain warping with reactive cursor displacement
     for (float i = 1.0; i < 4.0; i++) {
-      st.x += 0.35 / i * sin(i * 2.8 * st.y + u_time * 0.35 + mouseDist * 0.4);
-      st.y += 0.35 / i * cos(i * 2.8 * st.x + u_time * 0.35);
+      st.x += 0.45 / i * sin(i * 2.8 * st.y + u_time * 0.35 + mouseInfluence * 2.5);
+      st.y += 0.45 / i * cos(i * 2.8 * st.x + u_time * 0.35 + mouseInfluence * 2.5);
     }
 
     // 5. Calculate fluid interference wave patterns
