@@ -32,18 +32,19 @@ const fragmentShader = `
     vec2 p = st * 1.3;
 
     for (float i = 1.0; i < 4.0; i++) {
-      p.x += 0.50 / i * sin(i * 2.2 * p.y + u_time * 0.45 + mouseInfluence * 2.0);
-      p.y += 0.50 / i * cos(i * 2.2 * p.x + u_time * 0.45 + mouseInfluence * 2.0);
+      p.x += 0.45 / i * sin(i * 2.2 * p.y + u_time * 0.4 + mouseInfluence * 1.8);
+      p.y += 0.45 / i * cos(i * 2.2 * p.x + u_time * 0.4 + mouseInfluence * 1.8);
     }
 
     float wave = sin(p.x + p.y) * 0.5 + 0.5;
 
-    vec3 a = vec3(0.12, 0.22, 0.32);
-    vec3 b = vec3(0.35, 0.85, 0.65);
+    // Refined Dark Mode Palette (Deep Slate Base + Emerald & Cyan Glow)
+    vec3 a = vec3(0.03, 0.08, 0.14);
+    vec3 b = vec3(0.10, 0.42, 0.38);
     vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.00, 0.33, 0.67);
+    vec3 d = vec3(0.00, 0.33, 0.50);
 
-    vec3 color = colorPalette(wave + p.x * 0.15 + p.y * 0.15, a, b, c, d);
+    vec3 color = colorPalette(wave + p.x * 0.12 + p.y * 0.12, a, b, c, d);
 
     gl_FragColor = vec4(color, 1.0);
   }
