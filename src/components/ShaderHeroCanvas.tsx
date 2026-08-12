@@ -6,6 +6,7 @@ import * as THREE from 'three';
 
 // -----------------------------------------------------------------------------
 // GLSL VERTEX SHADER
+// Positions the plane geometry to fill clip space (-1 to 1) completely
 // -----------------------------------------------------------------------------
 const vertexShader = `
   varying vec2 vUv;
@@ -17,6 +18,7 @@ const vertexShader = `
 
 // -----------------------------------------------------------------------------
 // GLSL FRAGMENT SHADER
+// Full-screen domain-warped fluid generator without edge fading
 // -----------------------------------------------------------------------------
 const fragmentShader = `
   uniform float u_time;
@@ -30,38 +32,37 @@ const fragmentShader = `
   }
 
   void main() {
-    // 1. Normalize screen coordinates (-1.0 to 1.0, aspect-ratio corrected)
+    // 1. Aspect-ratio corrected normalized screen coordinates
     vec2 st = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
 
-    // 2. Normalize mouse position coordinates
+    // 2. Normalized interactive cursor coordinates
     vec2 mouse = (u_mouse * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
 
-    // 3. Distance and interactive cursor attraction field
+    // 3. Mouse influence radius across screen
     float mouseDist = length(st - mouse);
-    float mouseInfluence = smoothstep(1.2, 0.0, mouseDist);
-    vec2 st0 = st;
+    float mouseInfluence = smoothstep(1.5, 0.0, mouseDist);
 
-    // 4. Multi-layer domain warping with cursor ripple phase shift
+    // 4. Domain scale for full-screen fluid coverage
+    vec2 p = st * 1.4;
+
+    // 5. Multi-layer sinusoidal domain warping loop
     for (float i = 1.0; i < 4.0; i++) {
-      st.x += 0.55 / i * sin(i * 2.4 * st.y + u_time * 0.4 + mouseInfluence * 2.0);
-      st.y += 0.55 / i * cos(i * 2.4 * st.x + u_time * 0.4 + mouseInfluence * 2.0);
+      p.x += 0.45 / i * sin(i * 2.2 * p.y + u_time * 0.4 + mouseInfluence * 1.8);
+      p.y += 0.45 / i * cos(i * 2.2 * p.x + u_time * 0.4 + mouseInfluence * 1.8);
     }
 
-    // 5. Calculate fluid wave interference pattern
-    float wave = sin(st.x + st.y) * 0.5 + 0.5;
+    // 6. Calculate wave interference pattern across full screen
+    float wave = sin(p.x + p.y) * 0.5 + 0.5;
 
-    // 6. Brightened Palette (Vibrant base colors for video recording visibility)
-    vec3 a = vec3(0.08, 0.18, 0.25);  // Slate & cyan base
-    vec3 b = vec3(0.20, 0.75, 0.55);  // Vibrant emerald scale
+    // 7. Emerald & Slate color palette
+    vec3 a = vec3(0.04, 0.10, 0.18);  // Deep slate background
+    vec3 b = vec3(0.18, 0.65, 0.50);  // Emerald / teal glow
     vec3 c = vec3(1.0, 1.0, 1.0);     // Wave frequency
-    vec3 d = vec3(0.0, 0.33, 0.67);    // Color phase shifts
+    vec3 d = vec3(0.00, 0.33, 0.67);  // Phase offset
 
-    vec3 color = colorPalette(wave + length(st0) * 0.2, a, b, c, d);
+    vec3 color = colorPalette(wave + p.x * 0.12 + p.y * 0.12, a, b, c, d);
 
-    // 7. Full-Screen Vignette Pass
-    float vignette = 1.0 - smoothstep(0.8, 2.2, length(st0));
-    color *= vignette * 1.1;
-
+    // 8. Output full-screen fluid color directly (no edge vignette cutoff)
     gl_FragColor = vec4(color, 1.0);
   }
 `;
