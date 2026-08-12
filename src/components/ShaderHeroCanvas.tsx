@@ -6,7 +6,6 @@ import * as THREE from 'three';
 
 // -----------------------------------------------------------------------------
 // GLSL VERTEX SHADER
-// Passes standard UV coordinates and projected vertex positions to the fragment stage.
 // -----------------------------------------------------------------------------
 const vertexShader = `
   varying vec2 vUv;
@@ -18,7 +17,6 @@ const vertexShader = `
 
 // -----------------------------------------------------------------------------
 // GLSL FRAGMENT SHADER
-// Creates a fluid, domain-warped cosmic aurora with interactive mouse distortion.
 // -----------------------------------------------------------------------------
 const fragmentShader = `
   uniform float u_time;
@@ -38,31 +36,31 @@ const fragmentShader = `
     // 2. Normalize mouse position coordinates
     vec2 mouse = (u_mouse * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
 
-    // 3. Compute distance and localized attraction field around cursor
+    // 3. Distance and interactive cursor attraction field
     float mouseDist = length(st - mouse);
-    float mouseInfluence = smoothstep(1.0, 0.0, mouseDist);
+    float mouseInfluence = smoothstep(1.2, 0.0, mouseDist);
     vec2 st0 = st;
 
-    // 4. Multi-layer domain warping with reactive cursor displacement
+    // 4. Multi-layer domain warping with cursor ripple phase shift
     for (float i = 1.0; i < 4.0; i++) {
-      st.x += 0.45 / i * sin(i * 2.8 * st.y + u_time * 0.35 + mouseInfluence * 2.5);
-      st.y += 0.45 / i * cos(i * 2.8 * st.x + u_time * 0.35 + mouseInfluence * 2.5);
+      st.x += 0.55 / i * sin(i * 2.4 * st.y + u_time * 0.4 + mouseInfluence * 2.0);
+      st.y += 0.55 / i * cos(i * 2.4 * st.x + u_time * 0.4 + mouseInfluence * 2.0);
     }
 
-    // 5. Calculate fluid interference wave patterns
+    // 5. Calculate fluid wave interference pattern
     float wave = sin(st.x + st.y) * 0.5 + 0.5;
 
-    // 6. Custom Palette Selection: Deep Slate -> Emerald Green -> Cyber Cyan -> Deep Navy
-    vec3 a = vec3(0.02, 0.05, 0.10);  // Dark slate base
-    vec3 b = vec3(0.05, 0.45, 0.35);  // Emerald brightness scale
+    // 6. Brightened Palette (Vibrant base colors for video recording visibility)
+    vec3 a = vec3(0.08, 0.18, 0.25);  // Slate & cyan base
+    vec3 b = vec3(0.20, 0.75, 0.55);  // Vibrant emerald scale
     vec3 c = vec3(1.0, 1.0, 1.0);     // Wave frequency
     vec3 d = vec3(0.0, 0.33, 0.67);    // Color phase shifts
 
-    vec3 color = colorPalette(wave + length(st0) * 0.15, a, b, c, d);
+    vec3 color = colorPalette(wave + length(st0) * 0.2, a, b, c, d);
 
-    // 7. Edge Vignette Pass: Darkens screen borders to safeguard typography contrast
-    float vignette = 1.0 - smoothstep(0.4, 1.6, length(st0));
-    color *= vignette * 0.85;
+    // 7. Full-Screen Vignette Pass
+    float vignette = 1.0 - smoothstep(0.8, 2.2, length(st0));
+    color *= vignette * 1.1;
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -72,7 +70,6 @@ function ShaderPlane({ isReducedMotion }: { isReducedMotion: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const { size } = useThree();
 
-  // Initialize Uniforms
   const uniforms = useMemo(
     () => ({
       u_time: { value: 0.0 },
@@ -82,12 +79,10 @@ function ShaderPlane({ isReducedMotion }: { isReducedMotion: boolean }) {
     []
   );
 
-  // Keep resolution uniform updated on window resize
   useEffect(() => {
     uniforms.u_resolution.value.set(size.width, size.height);
   }, [size, uniforms]);
 
-  // Mouse event listener tracking normalized screen cursor
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
@@ -97,7 +92,6 @@ function ShaderPlane({ isReducedMotion }: { isReducedMotion: boolean }) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [uniforms]);
 
-  // Animation Loop: Pause time evolution if prefers-reduced-motion is active
   useFrame((_, delta) => {
     if (!isReducedMotion && meshRef.current) {
       (meshRef.current.material as THREE.ShaderMaterial).uniforms.u_time.value += delta;
@@ -121,7 +115,6 @@ function ShaderPlane({ isReducedMotion }: { isReducedMotion: boolean }) {
 export function ShaderHeroCanvas() {
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
-  // Detect accessibility system settings for reduced motion
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setIsReducedMotion(mediaQuery.matches);
@@ -133,7 +126,7 @@ export function ShaderHeroCanvas() {
 
   return (
     <Canvas
-      dpr={[1, 2]} // Capped devicePixelRatio for responsible performance
+      dpr={[1, 2]}
       className="absolute inset-0 w-full h-full -z-10 pointer-events-none"
       gl={{ antialias: false, powerPreference: 'high-performance' }}
     >
