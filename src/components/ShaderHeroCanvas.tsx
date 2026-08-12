@@ -4,10 +4,6 @@ import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// -----------------------------------------------------------------------------
-// GLSL VERTEX SHADER
-// Positions the plane geometry to fill clip space (-1 to 1) completely
-// -----------------------------------------------------------------------------
 const vertexShader = `
   varying vec2 vUv;
   void main() {
@@ -16,53 +12,39 @@ const vertexShader = `
   }
 `;
 
-// -----------------------------------------------------------------------------
-// GLSL FRAGMENT SHADER
-// Full-screen domain-warped fluid generator without edge fading
-// -----------------------------------------------------------------------------
 const fragmentShader = `
   uniform float u_time;
   uniform vec2 u_resolution;
   uniform vec2 u_mouse;
   varying vec2 vUv;
 
-  // Cosine-based procedural color palette generator
   vec3 colorPalette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
     return a + b * cos(6.28318 * (c * t + d));
   }
 
   void main() {
-    // 1. Aspect-ratio corrected normalized screen coordinates
     vec2 st = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-
-    // 2. Normalized interactive cursor coordinates
     vec2 mouse = (u_mouse * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
 
-    // 3. Mouse influence radius across screen
     float mouseDist = length(st - mouse);
     float mouseInfluence = smoothstep(1.5, 0.0, mouseDist);
 
-    // 4. Domain scale for full-screen fluid coverage
-    vec2 p = st * 1.4;
+    vec2 p = st * 1.3;
 
-    // 5. Multi-layer sinusoidal domain warping loop
     for (float i = 1.0; i < 4.0; i++) {
-      p.x += 0.45 / i * sin(i * 2.2 * p.y + u_time * 0.4 + mouseInfluence * 1.8);
-      p.y += 0.45 / i * cos(i * 2.2 * p.x + u_time * 0.4 + mouseInfluence * 1.8);
+      p.x += 0.50 / i * sin(i * 2.2 * p.y + u_time * 0.45 + mouseInfluence * 2.0);
+      p.y += 0.50 / i * cos(i * 2.2 * p.x + u_time * 0.45 + mouseInfluence * 2.0);
     }
 
-    // 6. Calculate wave interference pattern across full screen
     float wave = sin(p.x + p.y) * 0.5 + 0.5;
 
-    // 7. Emerald & Slate color palette
-    vec3 a = vec3(0.04, 0.10, 0.18);  // Deep slate background
-    vec3 b = vec3(0.18, 0.65, 0.50);  // Emerald / teal glow
-    vec3 c = vec3(1.0, 1.0, 1.0);     // Wave frequency
-    vec3 d = vec3(0.00, 0.33, 0.67);  // Phase offset
+    vec3 a = vec3(0.12, 0.22, 0.32);
+    vec3 b = vec3(0.35, 0.85, 0.65);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.00, 0.33, 0.67);
 
-    vec3 color = colorPalette(wave + p.x * 0.12 + p.y * 0.12, a, b, c, d);
+    vec3 color = colorPalette(wave + p.x * 0.15 + p.y * 0.15, a, b, c, d);
 
-    // 8. Output full-screen fluid color directly (no edge vignette cutoff)
     gl_FragColor = vec4(color, 1.0);
   }
 `;
@@ -113,7 +95,7 @@ function ShaderPlane({ isReducedMotion }: { isReducedMotion: boolean }) {
   );
 }
 
-export function ShaderHeroCanvas() {
+export default function ShaderHeroCanvas() {
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   useEffect(() => {
