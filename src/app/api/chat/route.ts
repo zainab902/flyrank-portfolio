@@ -41,7 +41,9 @@ export async function POST(req: Request) {
     const modelMessages = await convertToModelMessages(sanitizedMessages);
 
     const result = streamText({
-      model: groq("llama-3.3-70b-versatile"),
+// NEW (Active & fast Groq model)
+// Replace the model line with:
+model: groq('openai/gpt-oss-120b'),
       system: `You are the official Portfolio Assistant AI for Zainab Sultan's developer portfolio.
 
 Background Context:
